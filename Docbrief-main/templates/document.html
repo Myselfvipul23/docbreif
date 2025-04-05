@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ document['original_filename'] }} - DocBrief{% endblock %}
+
+{% block content %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ document['original_filename'] }}</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-8">
+        <h1>{{ document['original_filename'] }}</h1>
+        <!-- Added language display with badge -->
+        <p class="text-muted">
+            Uploaded on {{ document['upload_date'] }} | 
+            <span class="badge bg-info text-dark">Language: {{ document.get('language', 'English') }}</span>
+        </p>
+
+        <div class="mb-4">
+            <!-- Download buttons remain the same -->
+            <a href="{{ url_for('download_file', filename=document['filename']) }}"
+                class="btn btn-outline-secondary me-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-download" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                    <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg>
+                Download Original Document
+            </a>
+            <a href="{{ url_for('download_summary', doc_id=document['id']) }}" class="btn btn-outline-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-file-text" viewBox="0 0 16 16">
+                    <path d="M5 4a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm-.5 2.5A.5.5 0 0 1 5 6h6a.5.5 0 0 1 0 1H5a.5.5 0 0 1-.5-.5zM5 8a.5.5 0 0 0 0 1h6a.5.5 0 0 0 0-1H5zm0 2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 0-1H5z"/>
+                    <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2zm10-1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z"/>
+                </svg>
+                Download Summary & Analysis
+            </a>
+        </div>
+
+        <!-- Summary Card with RTL support -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h5 mb-0">
+                    {% if document.get('language') == 'Hindi' %}
+                        सरल भाषा सारांश
+                    {% elif document.get('language') == 'Spanish' %}
+                        Resumen en Lenguaje Sencillo
+                    {% else %}
+                        Plain Language Summary
+                    {% endif %}
+                </h2>
+            </div>
+            <div class="card-body {% if document.get('language') in ['Arabic','Hebrew'] %}rtl-content{% endif %}">
+                <div class="summary-content">
+                    {{ document['summary']|safe }}
+                </div>
+            </div>
+        </div>
+
+        <!-- Important Clauses Card with RTL support -->
+        <div class="card">
+            <div class="card-header bg-warning">
+                <h2 class="h5 mb-0">
+                    {% if document.get('language') == 'Hindi' %}
+                        महत्वपूर्ण धाराएं
+                    {% elif document.get('language') == 'Spanish' %}
+                        Cláusulas Importantes
+                    {% else %}
+                        Important Clauses to Notice
+                    {% endif %}
+                </h2>
+            </div>
+            <div class="card-body {% if document.get('language') in ['Arabic','Hebrew'] %}rtl-content{% endif %}">
+                <div class="important-clauses-content">
+                    {{ document['important_clauses']|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Section with multilingual support -->
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h3 class="h5 mb-0">
+                    {% if document.get('language') == 'Hindi' %}
+                        DocBrief के बारे में
+                    {% elif document.get('language') == 'Spanish' %}
+                        Acerca de DocBrief
+                    {% else %}
+                        About DocBrief
+                    {% endif %}
+                </h3>
+            </div>
+            <div class="card-body {% if document.get('language') in ['Arabic','Hebrew'] %}rtl-content{% endif %}">
+                {% if document.get('language') == 'Hindi' %}
+                    <p>DocBrief कानूनी दस्तावेजों का विश्लेषण करने और सरल भाषा में सारांश प्रदान करने के लिए उन्नत AI का उपयोग करता है।</p>
+                    <p>हमारी AI महत्वपूर्ण धाराओं की पहचान करती है जिन पर विशेष ध्यान देने की आवश्यकता होती है।</p>
+                    <p><strong>नोट:</strong> यह एक योग्य वकील की कानूनी सलाह का विकल्प नहीं है।</p>
+                {% elif document.get('language') == 'Spanish' %}
+                    <p>DocBrief utiliza IA avanzada para analizar documentos legales y proporcionar resúmenes en lenguaje sencillo.</p>
+                    <p>Nuestra IA identifica cláusulas importantes que requieren atención especial.</p>
+                    <p><strong>Nota:</strong> Esto no sustituye el asesoramiento legal de un abogado calificado.</p>
+                {% else %}
+                    <p>DocBrief uses advanced AI to analyze legal documents and provide plain language summaries.</p>
+                    <p>Our AI identifies important clauses that require special attention.</p>
+                    <p><strong>Note:</strong> This does not replace legal advice from a qualified attorney.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
